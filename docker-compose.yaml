@@ -1,0 +1,24 @@
+services:
+  point-glue:
+    image: point-glue-1
+    volumes:
+      #full dev
+      - /dev:/dev:rw
+      #full media
+      - /media:/media:rw
+      #Time
+      - /etc/timezone:/etc/timezone:rw
+      - /etc/localtime:/etc/localtime:rw
+      #workspaces
+      - ./ws/:/ws/
+      # - ./onnxruntime/:/onnxruntime/
+      # - ./openvino_toolkit/:/openvino_toolkit/
+    privileged: true
+    network_mode: host
+    ipc: host
+    pid: host
+    stdin_open: true
+    tty: true
+    environment:
+      - DISPLAY
+    entrypoint: /bin/bash
