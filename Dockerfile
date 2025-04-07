@@ -33,17 +33,27 @@ RUN apt-get install -y \
     python3-argcomplete
 
 # === SuperPoint
-WORKDIR /SuperPoint
-# WORKDIR /root/SuperPoint
-COPY ws/SuperPoint .
-RUN pip3 install -r requirements.txt
-RUN pip3 install -e .
-WORKDIR /
-RUN sudo rm -r /SuperPoint
+# WORKDIR /SuperPoint
+# # WORKDIR /root/SuperPoint
+# COPY ws/SuperPoint .
+# RUN pip3 install -r requirements.txt
+# RUN pip3 install -e .
+# WORKDIR /
+# RUN sudo rm -r /SuperPoint
 
-# Fix: libGL.so.1: cannot open shared object file: No such file or directory
-RUN sudo apt-get update && sudo apt-get install ffmpeg libsm6 libxext6 -y
+# # Fix: libGL.so.1: cannot open shared object file: No such file or directory
+# RUN sudo apt-get update && sudo apt-get install ffmpeg libsm6 libxext6 -y
 # === End SuperPoint
+
+# === LightGlue
+RUN pip install setuptools
+WORKDIR /LightGlue
+COPY ws/LightGlue .
+RUN python3 -m pip install -e .
+WORKDIR /
+RUN sudo rm -r /LightGlue
+
+# === End LightGlue
 
 COPY scripts/.bashrc /home/${USERNAME}/bashrc
 RUN cat /home/${USERNAME}/bashrc >> /home/${USERNAME}/.bashrc && rm /home/${USERNAME}/bashrc

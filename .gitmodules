@@ -1,3 +1,6 @@
 [submodule "SuperPoint"]
 	path = ws/SuperPoint
 	url = git@github.com:rpautrat/SuperPoint.git
+[submodule "LightGlue"]
+	path = ws/LightGlue
+	url = https://github.com/cvg/LightGlue.git
