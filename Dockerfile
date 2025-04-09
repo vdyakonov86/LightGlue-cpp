@@ -46,14 +46,43 @@ RUN apt-get install -y \
 # === End SuperPoint
 
 # === LightGlue
-RUN pip install setuptools
-WORKDIR /LightGlue
-COPY ws/LightGlue .
-RUN python3 -m pip install -e .
-WORKDIR /
-RUN sudo rm -r /LightGlue
+# RUN pip install setuptools
+# WORKDIR /LightGlue
+# COPY ws/LightGlue .
+# RUN python3 -m pip install -e .
+# WORKDIR /
+# RUN sudo rm -r /LightGlue
 
 # === End LightGlue
+
+# === OpenCV
+# prerequisites
+RUN apt-get install -y g++
+# Install cmake using pip in order to get latest version
+RUN pip install cmake 
+
+# Deps to fix opencv error when run orb-slam3
+# RUN apt-get install -y libgtk2.0-dev pkg-config
+
+# download and unpack sources
+RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/4.9.0.zip \
+    && unzip opencv.zip \
+    && mv opencv-4.9.0 opencv \
+    && rm opencv.zip
+
+# build
+RUN mkdir -p /opencv_build \
+    && cd /opencv_build \
+    && cmake -DBUILD_TESTS=OFF ../opencv \
+    && make -j4
+
+# install, remove source/build files
+RUN cd /opencv_build \
+    && sudo make install \
+    && cd .. \
+    && rm -rf /opencv /opencv_build
+
+# === End OpenCV
 
 COPY scripts/.bashrc /home/${USERNAME}/bashrc
 RUN cat /home/${USERNAME}/bashrc >> /home/${USERNAME}/.bashrc && rm /home/${USERNAME}/bashrc
