@@ -64,7 +64,7 @@ void show_info(Ort::Session &session){
 
 
 int main(void){
-    std::string model_path = "/ws/examples/onnx-classification/weights/mnist.onnx";
+    std::string model_path = "/ws/examples/onnx-classification/weights/mnist_classification.onnx";
     Ort::SessionOptions session_options;
     Ort::Env env;
     Ort::Session session = Ort::Session(env, model_path.c_str(), session_options);
@@ -108,7 +108,8 @@ int main(void){
     std::ifstream f(image_list_txt_path);
     std::string line;
     while (std::getline(f, line))
-    {
+    {   
+        std::cout << "line: " << line << std::endl;
         const auto splitted_strings_vector = split_string(line, " ");
         const auto image_path = splitted_strings_vector[0];
         const auto ground_truth = splitted_strings_vector[1];
@@ -121,7 +122,9 @@ int main(void){
         // transposeND()
         std::vector<cv::Mat> each_channel;
         cv::split(float_img, each_channel);
-        for (int i = 0; i < 3; i++){
+        // std::cout << input_dims[0] << " " << input_dims[1] << " " << input_dims[2] << " " << input_dims[3] << std::endl;
+        int model_input_channels = input_dims[1]; 
+        for (int i = 0; i < model_input_channels; i++){
             std::copy(each_channel[i].begin<float>(), each_channel[i].end<float>(), input_array.begin() + input_dims[2] * input_dims[3] * i);
         }
 
@@ -131,7 +134,6 @@ int main(void){
         // Result
         const auto prediction_result = std::distance(output_array.begin(),std::max_element(output_array.begin(), output_array.end()));
         std::cout << "Ground Truth: " << ground_truth << ", Prediction: " << prediction_result << ", Score: " << output_array[prediction_result] << std::endl;
-
     }
     return 0;
 }
