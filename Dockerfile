@@ -25,40 +25,27 @@ RUN apt-get install -y \
     curl \
     zip \
     unzip \
-    python3 \
+    python3.11 \
     python3-pip \
     x11-apps \
     # Autocomplete
     bash-completion \
     python3-argcomplete
 
-# === SuperPoint
-# WORKDIR /SuperPoint
-# # WORKDIR /root/SuperPoint
-# COPY ws/SuperPoint .
-# RUN pip3 install -r requirements.txt
-# RUN pip3 install -e .
-# WORKDIR /
-# RUN sudo rm -r /SuperPoint
+# Change default python version
+RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1 \
+    && sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.10 2 \
+    && sudo update-alternatives --set python /usr/bin/python3.11
 
-# # Fix: libGL.so.1: cannot open shared object file: No such file or directory
-# RUN sudo apt-get update && sudo apt-get install ffmpeg libsm6 libxext6 -y
-# === End SuperPoint
-
-# === LightGlue
-# RUN pip install setuptools
-# WORKDIR /LightGlue
-# COPY ws/LightGlue .
-# RUN python3 -m pip install -e .
-# WORKDIR /
-# RUN sudo rm -r /LightGlue
-
-# === End LightGlue
+# RUN sudo apt remove -y python3-pip
+# RUN sudo apt-get install -y python3-pip
+# RUN python -m pip install --upgrade pip
+# RUN export PATH=/home/ubuntu/.local/bin:$PATH
 
 # === OpenCV
-# prerequisites
+# Prerequisites
 RUN apt-get install -y g++
-# Install cmake using pip in order to get latest version
+# install cmake using pip in order to get latest version
 RUN pip install cmake 
 
 # Deps to fix opencv error when run orb-slam3
@@ -83,6 +70,33 @@ RUN cd /opencv_build \
     && rm -rf /opencv /opencv_build
 
 # === End OpenCV
+
+# === LightGlue
+RUN pip install setuptools
+WORKDIR /LightGlue
+COPY ws/LightGlue .
+RUN python -m pip install -e .
+WORKDIR /
+RUN sudo rm -r /LightGlue
+# === End LightGlue
+
+# === LightGlue-ONNX
+WORKDIR /LightGlue-ONNX
+COPY ws/LightGlue-ONNX .
+COPY scripts/setup.py /LightGlue-ONNX/setup.py
+RUN python -m pip install .
+WORKDIR /
+RUN sudo rm -r /LightGlue-ONNX
+RUN python -m pip install torch onnx PyQt5
+# Fix Could not load the Qt platform plugin "xcb"
+RUN sudo python -m pip uninstall opencv-python opencv-contrib-python opencv-python-headless -y
+RUN python -m pip install opencv-python-headless
+RUN sudo apt-get install '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev -y
+# RUN sudo apt-get install libxcb-xinerama0 libqt5x11extras5 libxcb-cursor0 -y
+# === End LightGlue-ONNX
+
+# Fix: libGL.so.1: cannot open shared object file: No such file or directory
+RUN sudo apt-get update && sudo apt-get install ffmpeg libsm6 libxext6 -y
 
 COPY scripts/.bashrc /home/${USERNAME}/bashrc
 RUN cat /home/${USERNAME}/bashrc >> /home/${USERNAME}/.bashrc && rm /home/${USERNAME}/bashrc

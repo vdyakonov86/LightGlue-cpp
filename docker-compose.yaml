@@ -1,6 +1,6 @@
 services:
-  point-glue:
-    image: point-glue-1
+  lightglue:
+    image: lightglue
     volumes:
       #full dev
       - /dev:/dev:rw
@@ -11,7 +11,8 @@ services:
       - /etc/localtime:/etc/localtime:rw
       #workspaces
       - ./ws/:/ws/
-      # - ./onnxruntime/:/onnxruntime/
+      #libs
+      - ./onnxruntime/:/onnxruntime/
       # - ./openvino_toolkit/:/openvino_toolkit/
     privileged: true
     network_mode: host

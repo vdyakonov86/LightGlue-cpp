@@ -1,1 +1,4 @@
 datasets
+onnxruntime
+build
+.vscode

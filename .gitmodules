@@ -4,3 +4,6 @@
 [submodule "LightGlue"]
 	path = ws/LightGlue
 	url = https://github.com/cvg/LightGlue.git
+[submodule "LightGlue-ONNX"]
+	path = ws/LightGlue-ONNX
+	url = https://github.com/fabio-sim/LightGlue-ONNX?tab=readme-ov-file
